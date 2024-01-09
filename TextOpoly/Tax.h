@@ -1,5 +1,6 @@
 #pragma once
 #include "BoardSpace.h"
+
 class Tax :
     public BoardSpace
 {

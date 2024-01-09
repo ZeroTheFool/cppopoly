@@ -1,6 +1,8 @@
 #include "gameAdmin.h"
 #include "Player.h"
 #include "BoardSpace.h"
+#include "Utility.h"
+#include "Tax.h"
 #include "tradeManager.h"
 #include "CardSystem.h"
 #include <iostream>

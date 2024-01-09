@@ -8,6 +8,7 @@
 class CardSystem;
 class Card;
 
+
 class CardSpace :
     public BoardSpace
 {

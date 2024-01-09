@@ -134,6 +134,7 @@
     <ClCompile Include="Corner.cpp" />
     <ClCompile Include="GameAdmin.cpp" />
     <ClCompile Include="GameBoard.cpp" />
+    <ClCompile Include="GameCard.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Property.cpp" />
@@ -149,6 +150,7 @@
     <ClInclude Include="enum.h" />
     <ClInclude Include="GameAdmin.h" />
     <ClInclude Include="GameBoard.h" />
+    <ClInclude Include="GameCard.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Property.h" />
     <ClInclude Include="Railroad.h" />

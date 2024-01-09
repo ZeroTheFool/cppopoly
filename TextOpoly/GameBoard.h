@@ -14,6 +14,7 @@
 #include <memory>
 
 class Property;
+
 //class CardSystem;
 
 class GameBoard

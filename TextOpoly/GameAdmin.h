@@ -1,6 +1,6 @@
 #pragma once
 #include "Player.h"
-#include "GameBoard.h"
+//#include "GameBoard.h"
 #include "BoardSpace.h"
 #include "tradeManager.h"
 //#include "CardSystem.h"
