@@ -36,6 +36,7 @@ public:
                 deck[i] = cSystem->returnCommunityCard(i);
             }
         }
+        shuffleDeck();
     };
     ~CardSpace() {};
 

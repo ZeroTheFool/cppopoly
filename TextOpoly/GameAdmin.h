@@ -21,6 +21,7 @@ private:
     int m_roundCount = 0;
     int m_newPlayerIndex = -1; // used to get the next player in order
     int m_playerCount = 0;
+    int m_maxPlayerCount = 4;
     std::vector<std::shared_ptr<Player>> m_playerList;
 
     GameBoard* m_board;
@@ -78,11 +79,13 @@ public:
     // CARD FUNCTIONS
     PropertyResult cardActionMenu(GameCard* newCard);
 
+    std::string formatDisplayNameRow(std::string text, int width);
+
     ////functionType::Pay
-    //PropertyResult cardPayMoney(std::shared_ptr<Card> newCard);
+    PropertyResult cardPayMoney(GameCard* newCard);
 
     ////functionType::Receive
-    //int receiveMoney(std::shared_ptr<Player> player, std::shared_ptr<Card> newCard); /* check payer, etc */
+    void cardReceiveMoney(GameCard* newCard); /* check payer, etc */
 
     ////functionType::MoveToIndex
     //PropertyResult cardMoveToSpace(std::shared_ptr<Card> newCard);

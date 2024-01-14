@@ -18,10 +18,17 @@ void GameAdmin::makePlayerList()
     std::string newName;
     m_playerCount = 0;
 
-    cout << "Enter Player Names " << m_playerCount + 1 << " ( 'start' to begin, 'quit' to exit )\n";
+    cout << "Enter Player Names ( or 'quit' to exit )\n";
     do
     {
-        cout << "Player " << m_playerCount + 1 << ":";
+        if (m_playerCount < 2) // if first or second player, prompt for name
+        {
+            cout << "Player " << m_playerCount + 1 << ":";
+        }
+        else // if third or fourth player, may alternatively type start
+        {
+            cout << "Player " << m_playerCount + 1 << " ( or 'start' to begin ):";
+        }
         cin >> newName;
 
         if (newName == "quit") // set players to zero and break loop
@@ -30,13 +37,21 @@ void GameAdmin::makePlayerList()
             break;
         }
 
+        // entered a username (possible for a user to be accidentally named "Start" or "START" or some permutation)
         if (newName != "start")
         {
             makePlayer = make_shared<Player>(newName, 1000);
             m_playerList.push_back(makePlayer);
             m_playerCount++;
         }
-    } while (newName != "start");
+        else
+        {
+            if (m_playerCount > 1)
+            {
+            break;
+            }
+        }
+    } while (m_playerCount != m_maxPlayerCount);
 
 }
 
@@ -513,18 +528,59 @@ PropertyResult GameAdmin::promptPlayerToPay(int rent, std::shared_ptr<Player> pO
 //              CARD FUNCTIONS
 //************************************************
 
+std::string GameAdmin::formatDisplayNameRow(std::string text, int width)
+{
+    std::string preSpace = "";
+    std::string postSpace = "";
+    size_t totalSpaces = 0;
+    std::string m_newRow = "";
+
+    totalSpaces = width - text.length(); // the longest name is North Carolina, plus one space on either side
+
+    // the name needs spaces added between the border and text
+    for (int i = 0; i < (totalSpaces / 2); i++) // divide the number of needed spaces between the area pre and post the name
+    {
+        preSpace += " ";
+        postSpace += " ";
+    }
+
+    if (totalSpaces % 2 == 1) // number of spaces was not even
+    {
+        postSpace += " "; // add an extra space after the name
+    }
+
+    // add needed spaces and name to display
+    m_newRow += preSpace + text + postSpace;
+
+    return m_newRow;
+}
+
 PropertyResult GameAdmin::cardActionMenu(GameCard* newCard)
 {
+    string m_displayText = "\nx----------------x\n";
+    // add top border to display name
+
+    m_displayText += "|" + formatDisplayNameRow(newCard->m_name, 16) + "|\n";;
+    m_displayText += "|" + formatDisplayNameRow("", 16) + "|\n";;
+    m_displayText += "|" + formatDisplayNameRow(newCard->m_description, 16) + "|\n";;
+
+    // add bottom border to display name
+    m_displayText += "x----------------x\n";
+
+    cout << m_displayText << endl;
+
     switch (newCard->m_type)
     {
     case functionType::Pay:
-        //return cardPayMoney(newCard);
-        break;
+        cout << newCard->m_name << endl;
+        return cardPayMoney(newCard);
+
     case functionType::Receive:
-        break;
+        cardReceiveMoney(newCard);
+        return PropertyResult::None;
 
     case functionType::MoveToIndex:
-
+        cout << newCard->m_name << endl;
         break;
 
     case functionType::GoToJail:
@@ -543,45 +599,47 @@ PropertyResult GameAdmin::cardActionMenu(GameCard* newCard)
     return PropertyResult::None;
 }
 //
-//PropertyResult GameAdmin::cardPayMoney(std::shared_ptr<Card> newCard)
-//{
-//    // determine who to pay
-//    // either Bank or All
-//    std::shared_ptr<Player> activePlayer = m_playerList.at(m_newPlayerIndex);
-//
-//    char menuSelection = 'q';
-//    int payTotal = newCard->m_functionValue; // save the original value to pay all
-//    if (newCard->m_target == functionTarget::All)
-//    {
-//        payTotal = newCard->m_functionValue * getPlayerCount(); // multiply by number of players
-//    }
-//    while (!activePlayer->canAfford(payTotal) && menuSelection != 'Q') // check player can pay the total, whether multiplied or not
-//    {
-//        menuSelection = activePlayer->playerMenu(false, false, nullptr);
-//    }
-//
-//    // exiting the loop means they can afford to pay whatever the amount was, or went bankrupt
-//    if (menuSelection != 'Q')
-//    {
-//        activePlayer->payMoney(payTotal);
-//        if (newCard->m_target == functionTarget::All)
-//        {
-//            for (int i = 0; i < m_playerCount; i++)
-//            {
-//                // each player gets the original, unmodiifed, value
-//                m_playerList.at(i)->receiveMoney(newCard->m_functionValue);
-//            }
-//        }
-//        return PropertyResult::PaidRent;
-//    }
-//    else
-//    {
-//        // chose bankruptcy
-//        // this will ensure their turn is ended back in main
-//        return PropertyResult::Bankruptcy;
-//    }
-//    return PropertyResult::None;
-//}
+PropertyResult GameAdmin::cardPayMoney(GameCard* newCard)
+{
+    // determine who to pay
+    // either Bank or All
+    // first get current player
+    std::shared_ptr<Player> activePlayer = m_playerList.at(m_newPlayerIndex);
+
+    char menuSelection = 'q';
+    int payTotal = newCard->m_functionValue; // save the original value to pay all
+    if (newCard->m_target == functionTarget::All)
+    {
+        payTotal = newCard->m_functionValue * getPlayerCount(); // multiply by number of players
+    }
+
+    while (!activePlayer->canAfford(payTotal) && menuSelection != 'Q') // check player can pay the total, whether multiplied or not
+    {
+        menuSelection = activePlayer->playerMenu(false, false, nullptr);
+    }
+    // exiting the loop means they can afford to pay whatever the amount was, or went bankrupt
+
+    if (menuSelection != 'Q')
+    {
+        activePlayer->payMoney(payTotal);
+        if (newCard->m_target == functionTarget::All)
+        {
+            for (int i = 0; i < m_playerCount; i++)
+            {
+                // each player gets the original, unmodiifed, value
+                m_playerList.at(i)->receiveMoney(newCard->m_functionValue);
+            }
+        }
+        return PropertyResult::PaidRent;
+    }
+    else
+    {
+        // chose bankruptcy
+        // this will ensure their turn is ended back in main
+        return PropertyResult::Bankruptcy;
+    }
+    return PropertyResult::None;
+}
 //
 //PropertyResult GameAdmin::cardMoveToSpace(std::shared_ptr<Card> newCard)
 //{
@@ -612,6 +670,12 @@ PropertyResult GameAdmin::cardActionMenu(GameCard* newCard)
 //
 //    return PropertyResult::None;
 //}
+
+void GameAdmin::cardReceiveMoney(GameCard* newCard)
+{
+    std::shared_ptr<Player> activePlayer = m_playerList.at(m_newPlayerIndex);
+    activePlayer->receiveMoney(newCard->m_functionValue);
+}
 
 void GameAdmin::cardGoToJail()
 {

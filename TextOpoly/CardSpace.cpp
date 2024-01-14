@@ -5,11 +5,11 @@ void CardSpace::shuffleDeck()
 {
     GameCard* temp;
     //for (int i = 0; i < 16; i++)
-    for (int i = 0; i < 16; i++)
+    for (int i = 0; i < 3; i++)
     {
         // for each card, swap positions with a random other card
         temp = deck[i];
-        int swap = rand() % 15;
+        int swap = rand() % 3; // TESTING: should be % 16
         deck[i] = deck[swap];
         deck[swap] = temp;
     }
@@ -22,7 +22,7 @@ GameCard* CardSpace::drawNextCard()
     // admin handles the rest
     GameCard* nextCard = deck[deckPosition];
     
-    if (deckPosition < 15)
+    if (deckPosition < 2) // TESTING: should be 15
     {
         deckPosition++;
     }

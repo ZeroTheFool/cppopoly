@@ -41,14 +41,15 @@ int main()
     std::shared_ptr<GameAdmin> admin = make_shared<GameAdmin>(&board);
     int playerCount = admin->getPlayerCount();
 
+    // if no player names are entered, can't start game so just exit
+    // needs a real quit message
+    if (playerCount == 0)
+        return 0;
+
     for (int i = 0; i < playerCount; i++)
     {
         admin->getPlayerList().at(i)->setAdmin(admin);
     }
-
-    // if no player names are entered, can't start game so just exit
-    // needs a real quit message, and also needs to delete pointers
-
 
     int roundCount = 0;
 
@@ -233,6 +234,7 @@ int main()
         // use their roll (from jail or not) to move to new space
 
         currentLocationIndex = currentPlayer->rollResult(dieRollOne, dieRollTwo);
+        currentLocationIndex = 7; // TESTING:need to land on a cardspace
         cout << "Moving..." << endl;
 
         if (currentLocationIndex > 39)

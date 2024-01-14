@@ -6,7 +6,7 @@
 struct GameCard
 {
     std::string m_name;
-    std::string m_description;
+    std::string m_description; // this needs to be under 16 characters or a second variable is needed for multi-line (or array)
 
     int m_functionValue = 0; // index for moving, amount for paying
     int m_payMultiplier = 1; // normally 1, but may be 2 or 10
