@@ -44,7 +44,7 @@ bool Player::operator==(const Player& player)
 
 void Player::setAdmin(std::shared_ptr<GameAdmin> admin)
 {
-    admin = admin;
+    m_admin = admin;
 }
 
 int Player::rollResult(int die1, int die2)
@@ -88,7 +88,18 @@ void Player::setJailStatus(bool newStatus)
     {
         m_currentLocationIndex = 9; // location 9 is just visiting
     }
-    // when leaving jail
+    m_turnsInJail = 0; // whether entering or exiting jail, this should reset to 0, because every roll attempt increases it by 1
+}
+
+void Player::incrementJailTurns()
+{
+    //this will never reach 4, don't need error-checking
+    m_turnsInJail++;
+}
+
+int Player::getJailTurns()
+{
+    return m_turnsInJail;
 }
 
 void Player::resetDoubles()
@@ -222,8 +233,8 @@ void Player::reviewProperties()
     bool demo = false;
     bool mortgage = false;
 
-    int housesAvailable = admin->getHousePool();
-    int hotelsAvailable = admin->getHotelPool();
+    int housesAvailable = m_admin->getHousePool();
+    int hotelsAvailable = m_admin->getHotelPool();
 
     std::shared_ptr<BoardSpace> viewedProperty;
     char menuSelection = 'q'; // just need a default value for do-while to be okay
@@ -354,8 +365,8 @@ void Player::reviewProperties()
     } while (menuSelection != 'q');
 
     // in case player built/demolished, update admin
-    admin->setHousePool(housesAvailable);
-    admin->setHotelPool(hotelsAvailable);
+    m_admin->setHousePool(housesAvailable);
+    m_admin->setHotelPool(hotelsAvailable);
 }
 
 void Player::acquireProperty(std::shared_ptr<BoardSpace> aNewSpace)
@@ -399,6 +410,23 @@ void Player::acquireProperty(std::shared_ptr<BoardSpace> aNewSpace)
     {
         // normal property, add to colour collection
         m_setCollection[aNewSpace->getSetColour()]++;
+        // check if amount owned is the maximum available of that colour (has full set now)
+        if (m_setCollection[aNewSpace->getSetColour()] == aNewSpace->getSetSize())
+        {
+            updateSetSpaces(aNewSpace, true);
+        }
+    }
+}
+
+void Player::updateSetSpaces(std::shared_ptr<BoardSpace>& aNewSpace, bool isComplete)
+{
+    // tell all members of set that they are complete
+    aNewSpace->updateSetStatus(isComplete);
+    for (int p = 0; p < aNewSpace->getSetSize(); p++)
+    {
+        // get each neighbour, and tell admin to tell those properties to be complete or not
+        // the alternative is to iterate through all owned properties to find the ones matching the neighbours
+        m_admin->updateSetStatus(aNewSpace->getNeighbourByIndex(p), isComplete);
     }
 }
 
@@ -481,6 +509,13 @@ void Player::forfeitProperty(std::shared_ptr<BoardSpace> aNewSpace)
     {
         // normal property, remove from colour collection
         m_setCollection[aNewSpace->getSetColour()]--;
+        if (m_setCollection[aNewSpace->getSetColour()] > 0)
+        {
+            // doesn't matter how many you have, if you lost one but still have at least one, no one has a full set
+            // alternatively, if you had one and traded it to someone with two, this could erroneously set the full set to false
+            // even though the other player now has the whole set
+            updateSetSpaces(aNewSpace, false);
+        }
     }
 }
 
@@ -787,8 +822,8 @@ void Player::performTrade(tradeOffer out, tradeOffer in)
     // out = the finalized struct going to the other player, remove from owner
     payMoney(out.tradeMoney);
     setJailCards(out.tradeJailCards * -1); // this function is set to receive +/- val so set to negative
-    
-    
+
+
     for (int t = 0; t < out.tradeProperties.size(); t++) // iterate through the properties to lose
     {
         for (int p = 0; p < m_propertyCounter; p++) // iterate through owned properties to compare, this list will become shorter
@@ -844,23 +879,23 @@ char Player::playerMenu(bool includePass, bool includeTrade, std::shared_ptr<Pla
         do
         {
             cout << "Who To Trade With:" << endl;
-            for (int i = 0; i < admin->getPlayerCount(); i++)
+            for (int i = 0; i < m_admin->getPlayerCount(); i++)
             {
-                if (i != admin->getCurrentPlayerIndex())
+                if (i != m_admin->getCurrentPlayerIndex())
                 {
                     // only print names and user-friendly indexes of other players
                     //printf("%i - %s", i + 1, admin->getPlayerList().at(i));
-                    cout << i + 1 << " " << admin->getPlayerList().at(i) << endl;
+                    cout << i + 1 << " " << m_admin->getPlayerList().at(i)->m_playerName << endl;
                 }
             }
             cin >> chosenPartner;
             chosenPartner--;
 
             // loop until they don't choose themself
-        } while (chosenPartner == admin->getCurrentPlayerIndex());
-
-        std::shared_ptr<Player> tradePartner = admin->getPlayerList().at(chosenPartner);
-        //admin->handleTrade(this, tradePartner);
+        } while (chosenPartner == m_admin->getCurrentPlayerIndex());
+        // there's literally no benefit to asking GameAdmin for this reference to pass into GameAdmin
+        //std::shared_ptr<Player> tradePartner = admin->getPlayerList().at(chosenPartner);
+        m_admin->handleTrade(chosenPartner);
     }
 
     else if (menuSelection == 'Q')

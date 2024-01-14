@@ -26,3 +26,16 @@ enum class PropertyResult
     Bankruptcy,
     SentToJail
 };
+
+enum class Colour
+{
+    None,
+    Brown,
+    LightBlue,
+    Magenta,
+    Orange,
+    Red,
+    Yellow,
+    Green,
+    Blue
+};

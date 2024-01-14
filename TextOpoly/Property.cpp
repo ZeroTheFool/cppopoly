@@ -73,7 +73,14 @@ void Property::displayDetails()
     if (m_tradeListed)
         cout << formatDisplayNameRow("--ON TRADE--", 18) << endl;
 
-    cout << formatDisplayNameRow("SET: " + m_colourDisplay + "\n", 18) << endl;
+    if (m_fullSet)
+    {
+        cout << formatDisplayNameRow("SET: " + m_colourDisplay + "**\n", 18) << endl;
+    }
+    else
+    {
+        cout << formatDisplayNameRow("SET: " + m_colourDisplay + "--\n", 18) << endl;
+    }
     // could there be an indicator here that player owns full set?
 
     if (m_currentOwner == "None")
@@ -105,19 +112,29 @@ void Property::viewMenu(int houses, int hotels)
 {
     if (!m_isMortgaged) // not mortgaged, can build
     {
-        if (m_houses < 4 && houses > 0) // player has room to build houses, and houses are available
+        if (m_fullSet) // can only build with a full set
         {
-            cout << "b - build (-$" << m_houseBuildPrice << ")" << endl;
-        }
-        else if (m_houses == 4 && hotels > 0) // player has room to build hotel, hotels are available
-        {
-            cout << "b - build (-$" << m_hotelBuildPrice << ")" << endl;
+            if (m_houses < 4 && houses > 0) // player has room to build houses, and houses are available
+            {
+                cout << "b - build (-$" << m_houseBuildPrice << ")" << endl;
+            }
+            else if (m_houses == 4 && hotels > 0) // player has room to build hotel, hotels are available
+            {
+                cout << "b - build (-$" << m_hotelBuildPrice << ")" << endl;
+            }
+            else
+            {
+                cout << "Can't build here" << endl;
+            }
         }
         else
         {
             cout << "Can't build here" << endl;
         }
 
+        // should not have to check for full set here, the only scenario in which a property has buildings
+        // but isn't a full set would be if a player traded a property with buildings on it
+        // this scenario is avoidable if you just prevent trades like that (doesn't make strategic sense anyway)
         if (m_houses < 5 && m_houses > 0)
         {
             cout << "d - demolish (+$" << m_houseDemolishValue << ")" << endl;
@@ -196,6 +213,21 @@ void Property::colourAsString(Colour newColour)
         m_colourDisplay = "XX";
         break;
     }
+}
+
+int Property::getSetSize()
+{
+    return m_setSize;
+}
+
+void Property::updateSetStatus(bool isComplete)
+{
+    m_fullSet = isComplete;
+}
+
+int Property::getNeighbourByIndex(int index)
+{
+    return m_setNeighbours[index];
 }
 
 bool Property::canBeMortgaged()

@@ -1,20 +1,17 @@
 #pragma once
 #include "BoardSpace.h"
-//#include "CardSystem.h"
+#include "CardSystem.h"
+#include "GameCard.h"
 #include "Player.h"
 
 #include <memory>
-
-class CardSystem;
-class Card;
-
 
 class CardSpace :
     public BoardSpace
 {
 private:
-    std::shared_ptr<Card> deck[16] = { 0 };
-    //CardSystem* cSystem = nullptr;
+    GameCard* deck[16];
+    CardSystem* cSystem = nullptr;
     int deckPosition = 0;
 
 public:
@@ -23,7 +20,7 @@ public:
         : BoardSpace(inStreetName, inStreetType, 0, "Bank", 0, 0, 0)
     {
         // when a chance or community chest gets created, need to create the associated deck
-        /*if (spaceType == "chance")
+        if (spaceType == "chance")
         {
             cSystem = new CardSystem("chance");
             for (int i = 0; i < 3; i++)
@@ -38,12 +35,12 @@ public:
             {
                 deck[i] = cSystem->returnCommunityCard(i);
             }
-        }*/
+        }
     };
     ~CardSpace() {};
 
     void shuffleDeck();
-    std::shared_ptr<Card> drawNextCard();
+    GameCard* drawNextCard();
 };
 
 

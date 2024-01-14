@@ -1,78 +1,85 @@
 #include "GameBoard.h"
+#include "Property.h"
+#include "Railroad.h"
+#include "Utility.h"
+#include "Tax.h"
+#include "Corner.h"
+#include "CardSpace.h"
 
 GameBoard::GameBoard()
 {
     // name1, name2, purchase, rent 0,1,2,3,4,H, build, build, demo, demo, owner, mort, unmort
-    m_newProp = std::make_shared<Property>("Mediterranean", "Avenue", 60, 2, 10, 30, 90, 160, 250, 50, 50, 50, 50, "BANK", 30, 30, Colour::Brown, 1);
+    m_newProp = std::make_shared<Property>("Mediterranean", "Avenue", 60, 2, 10, 30, 90, 160, 250, 50, 50, 50, 50, "BANK", 30, 30, Colour::Brown, 3, -1, 1);
     m_boardOrder[1] = m_newProp;
 
-    m_newProp = std::make_shared<Property>("Baltic", "Avenue", 60, 4, 20, 60, 180, 320, 450, 50, 50, 50, 50, "None", 30, 30, Colour::Brown, 3);
+    m_newProp = std::make_shared<Property>("Baltic", "Avenue", 60, 4, 20, 60, 180, 320, 450, 50, 50, 50, 50, "None", 30, 30, Colour::Brown, 1, -1, 3);
     m_boardOrder[3] = m_newProp;
 
-    m_newProp = std::make_shared<Property>("Oriental", "Avenue", 100, 6, 30, 90, 270, 400, 550, 50, 50, 50, 50, "None", 50, 50, Colour::LightBlue, 6);
+
+    m_newProp = std::make_shared<Property>("Oriental", "Avenue", 100, 6, 30, 90, 270, 400, 550, 50, 50, 50, 50, "None", 50, 50, Colour::LightBlue, 8, 9, 6);
     m_boardOrder[6] = m_newProp;
 
-    m_newProp = std::make_shared<Property>("Vermont", "Avenue", 100, 6, 30, 90, 270, 400, 550, 50, 50, 50, 50, "None", 50, 50, Colour::LightBlue, 8);
+    m_newProp = std::make_shared<Property>("Vermont", "Avenue", 100, 6, 30, 90, 270, 400, 550, 50, 50, 50, 50, "None", 50, 50, Colour::LightBlue, 6,9, 8);
     m_boardOrder[8] = m_newProp;
 
-    m_newProp = std::make_shared<Property>("Connecticut", "Avenue", 120, 8, 40, 100, 300, 450, 600, 50, 50, 50, 50, "None", 60, 60, Colour::LightBlue, 9);
+    m_newProp = std::make_shared<Property>("Connecticut", "Avenue", 120, 8, 40, 100, 300, 450, 600, 50, 50, 50, 50, "None", 60, 60, Colour::LightBlue, 6, 8, 9);
     m_boardOrder[9] = m_newProp;
 
 
-    m_newProp = std::make_shared<Property>("St Charles", "Place", 140, 10, 50, 150, 450, 625, 750, 100, 100, 100, 100, "None", 70, 70, Colour::Magenta, 11);
+    m_newProp = std::make_shared<Property>("St Charles", "Place", 140, 10, 50, 150, 450, 625, 750, 100, 100, 100, 100, "None", 70, 70, Colour::Magenta, 13, 14, 11);
     m_boardOrder[11] = m_newProp;
 
-    m_newProp = std::make_shared<Property>("States", "Avenue", 140, 10, 50, 150, 450, 625, 750, 100, 100, 100, 100, "None", 70, 70, Colour::Magenta, 13);
+    m_newProp = std::make_shared<Property>("States", "Avenue", 140, 10, 50, 150, 450, 625, 750, 100, 100, 100, 100, "None", 70, 70, Colour::Magenta, 11, 14, 13);
     m_boardOrder[13] = m_newProp;
 
-    m_newProp = std::make_shared<Property>("Virginia", "Avenue", 160, 12, 60, 180, 500, 700, 900, 100, 100, 100, 100, "None", 80, 80, Colour::Magenta, 14);
+    m_newProp = std::make_shared<Property>("Virginia", "Avenue", 160, 12, 60, 180, 500, 700, 900, 100, 100, 100, 100, "None", 80, 80, Colour::Magenta, 11, 13, 14);
     m_boardOrder[14] = m_newProp;
 
 
-    m_newProp = std::make_shared<Property>("St James", "Place", 180, 14, 70, 200, 550, 750, 95, 100, 100, 100, 100, "None", 90, 90, Colour::Orange, 16);
+    m_newProp = std::make_shared<Property>("St James", "Place", 180, 14, 70, 200, 550, 750, 95, 100, 100, 100, 100, "None", 90, 90, Colour::Orange, 18, 19, 16);
     m_boardOrder[16] = m_newProp;
 
-    m_newProp = std::make_shared<Property>("Tennessee", "Avenue", 180, 14, 70, 200, 550, 750, 95, 100, 100, 100, 100, "None", 90, 90, Colour::Orange, 18);
+    m_newProp = std::make_shared<Property>("Tennessee", "Avenue", 180, 14, 70, 200, 550, 750, 95, 100, 100, 100, 100, "None", 90, 90, Colour::Orange, 16, 19, 18);
     m_boardOrder[18] = m_newProp;
 
-    m_newProp = std::make_shared<Property>("New York", "Avenue", 200, 16, 80, 220, 600, 800, 1000, 100, 100, 100, 100, "None", 100, 100, Colour::Orange, 19);
+    m_newProp = std::make_shared<Property>("New York", "Avenue", 200, 16, 80, 220, 600, 800, 1000, 100, 100, 100, 100, "None", 100, 100, Colour::Orange, 16, 18, 19);
     m_boardOrder[19] = m_newProp;
 
 
-    m_newProp = std::make_shared<Property>("Kentucky", "Avenue", 220, 18, 90, 250, 700, 875, 1050, 150, 150, 150, 150, "None", 110, 110, Colour::Red, 21);
+    m_newProp = std::make_shared<Property>("Kentucky", "Avenue", 220, 18, 90, 250, 700, 875, 1050, 150, 150, 150, 150, "None", 110, 110, Colour::Red, 23, 24, 21);
     m_boardOrder[21] = m_newProp;
 
-    m_newProp = std::make_shared<Property>("Indiana", "Avenue", 220, 18, 90, 250, 700, 875, 1050, 150, 150, 150, 150, "None", 110, 110, Colour::Red, 23);
+    m_newProp = std::make_shared<Property>("Indiana", "Avenue", 220, 18, 90, 250, 700, 875, 1050, 150, 150, 150, 150, "None", 110, 110, Colour::Red, 21, 24, 23);
     m_boardOrder[23] = m_newProp;
 
-    m_newProp = std::make_shared<Property>("Illinois", "Avenue", 240, 20, 100, 300, 750, 925, 1100, 150, 150, 150, 150, "None", 120, 120, Colour::Red, 24);
+    m_newProp = std::make_shared<Property>("Illinois", "Avenue", 240, 20, 100, 300, 750, 925, 1100, 150, 150, 150, 150, "None", 120, 120, Colour::Red, 21, 23, 24);
     m_boardOrder[24] = m_newProp;
 
 
-    m_newProp = std::make_shared<Property>("Atlantic", "Avenue", 260, 24, 110, 330, 800, 975, 1150, 150, 150, 150, 150, "None", 130, 130, Colour::Yellow, 26);
+    m_newProp = std::make_shared<Property>("Atlantic", "Avenue", 260, 24, 110, 330, 800, 975, 1150, 150, 150, 150, 150, "None", 130, 130, Colour::Yellow, 27, 29, 26);
     m_boardOrder[26] = m_newProp;
 
-    m_newProp = std::make_shared<Property>("Ventor", "Avenue", 260, 24, 110, 330, 800, 975, 1150, 150, 150, 150, 150, "None", 130, 130, Colour::Yellow, 27);
+    m_newProp = std::make_shared<Property>("Ventor", "Avenue", 260, 24, 110, 330, 800, 975, 1150, 150, 150, 150, 150, "None", 130, 130, Colour::Yellow, 26, 29, 27);
     m_boardOrder[27] = m_newProp;
 
-    m_newProp = std::make_shared<Property>("Marvin", "Gardens", 280, 24, 120, 360, 850, 1025, 1200, 150, 150, 150, 150, "None", 140, 140, Colour::Yellow, 29);
+    m_newProp = std::make_shared<Property>("Marvin", "Gardens", 280, 24, 120, 360, 850, 1025, 1200, 150, 150, 150, 150, "None", 140, 140, Colour::Yellow, 26, 27, 29);
     m_boardOrder[29] = m_newProp;
 
 
-    m_newProp = std::make_shared<Property>("Pacific", "Avenue", 300, 26, 130, 390, 900, 1100, 1275, 200, 200, 200, 200, "None", 150, 150, Colour::Green, 31);
+    m_newProp = std::make_shared<Property>("Pacific", "Avenue", 300, 26, 130, 390, 900, 1100, 1275, 200, 200, 200, 200, "None", 150, 150, Colour::Green, 32, 34, 31);
     m_boardOrder[31] = m_newProp;
 
-    m_newProp = std::make_shared<Property>("North Carolina", "Avenue", 300, 26, 130, 390, 900, 1100, 1275, 200, 200, 200, 200, "None", 150, 150, Colour::Green, 32);
+    m_newProp = std::make_shared<Property>("North Carolina", "Avenue", 300, 26, 130, 390, 900, 1100, 1275, 200, 200, 200, 200, "None", 150, 150, Colour::Green, 31, 34, 32);
     m_boardOrder[32] = m_newProp;
 
-    m_newProp = std::make_shared<Property>("Pennsylvania", "Avenue", 320, 28, 150, 390, 900, 1200, 1400, 200, 200, 200, 200, "None", 160, 160, Colour::Green, 34);
+    m_newProp = std::make_shared<Property>("Pennsylvania", "Avenue", 320, 28, 150, 390, 900, 1200, 1400, 200, 200, 200, 200, "None", 160, 160, Colour::Green, 31, 32, 34);
     m_boardOrder[34] = m_newProp;
 
 
-    m_newProp = std::make_shared<Property>("Park", "Place", 350, 35, 175, 500, 1100, 1300, 1500, 200, 200, 200, 200, "None", 175, 175, Colour::Blue, 37);
+    m_newProp = std::make_shared<Property>("Park", "Place", 350, 35, 175, 500, 1100, 1300, 1500, 200, 200, 200, 200, "None", 175, 175, Colour::Blue, 39, -1, 37);
     m_boardOrder[37] = m_newProp;
 
-    m_newProp = std::make_shared<Property>("Boardwalk", "", 400, 50, 200, 600, 1400, 1700, 2000, 200, 200, 200, 200, "None", 200, 200, Colour::Blue, 39);
+    m_newProp = std::make_shared<Property>("Boardwalk", "", 400, 50, 200, 600, 1400, 1700, 2000, 200, 200, 200, 200, "None", 200, 200, Colour::Blue, 37, -1, 39);
     m_boardOrder[39] = m_newProp;
 
 

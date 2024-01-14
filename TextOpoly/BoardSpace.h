@@ -1,20 +1,10 @@
 #pragma once
 //#include "Player.h"
+#include "enum.h"
 
 #include <string>
 
-enum class Colour
-{
-    None,
-    Brown,
-    LightBlue,
-    Magenta,
-    Orange,
-    Red,
-    Yellow,
-    Green,
-    Blue
-};
+class Player;
 
 class BoardSpace
 {
@@ -31,7 +21,7 @@ protected:
     int m_purchasePrice = 0;
     
     std::string m_currentOwner = "None";
-    //Player* m_currentOwner = nullptr;
+    Player* m_pCurrentOwner = nullptr;
 
     int m_mortgageAmount = 0;
     int m_unMortgageAmount = 0;
@@ -105,6 +95,9 @@ public:
 
     virtual Colour getSetColour() { return Colour::None; };
     void colourAsString(Colour newColour) { };
+    virtual int getSetSize() { return 0; };
+    virtual void updateSetStatus(bool isComplete) {};
+    virtual int getNeighbourByIndex(int index) { return 0;  };
     
     virtual int houseCount() { return 0; };
 

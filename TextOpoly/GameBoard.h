@@ -6,7 +6,7 @@
 #include "Tax.h"
 #include "Corner.h"
 #include "CardSpace.h"
-//#include "CardSystem.h"
+#include "CardSystem.h"
 
 #include <vector>
 #include <string>
@@ -30,7 +30,7 @@ private:
     std::shared_ptr <Tax> m_newTax;
     std::shared_ptr <Corner> m_newCorner;
 
-    //CardSystem cSystem;
+    CardSystem cSystem;
 
 public:
     GameBoard();

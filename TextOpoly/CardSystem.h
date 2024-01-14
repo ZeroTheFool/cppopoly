@@ -1,6 +1,9 @@
 #pragma once
-#include "Player.h"
-#include "GameAdmin.h"
+/* The purpose of CardSystem is solely to be responsible for the creation of the Community Chest and Chance decks,
+* using the GameCard struct, and then return the requested array to the CardSpace class
+*/
+//#include "Player.h"
+//#include "GameAdmin.h"
 #include "GameCard.h"
 #include "enum.h"
 
@@ -8,13 +11,14 @@
 #include <memory>
 
 class Player;
+class GameAdmin;
 
 class CardSystem
 {
 private:
     
-    std::shared_ptr<GameCard> chanceDeck[16];
-    std::shared_ptr<GameCard> communityDeck[16];
+    GameCard* chanceDeck[16];
+    GameCard* communityDeck[16];
 ;
 public:
 
@@ -34,10 +38,11 @@ public:
 
     void makeChanceDeck();
     void makeCommunityDeck();
-    std::shared_ptr<GameCard> returnChanceCard(int index) {
+
+    GameCard* returnChanceCard(int index) {
         return chanceDeck[index];
     };
-    std::shared_ptr<GameCard> returnCommunityCard(int index) {
+    GameCard* returnCommunityCard(int index) {
         return communityDeck[index];
     };
 

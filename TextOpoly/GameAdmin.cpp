@@ -160,6 +160,11 @@ std::vector<std::shared_ptr<Player>> GameAdmin::getPlayerList()
     return m_playerList;
 }
 
+void GameAdmin::updateSetStatus(int boardIndex, bool isComplete)
+{
+    m_board->getCurrentSpace(boardIndex)->updateSetStatus(isComplete);
+}
+
 int GameAdmin::getJailFee()
 {
     return c_jailFee;
@@ -269,8 +274,12 @@ void GameAdmin::auctionProperty(std::shared_ptr<BoardSpace> cProperty)
     }
 }
 
-void GameAdmin::handleTrade(std::shared_ptr<Player> trader, std::shared_ptr<Player> receiver)
+void GameAdmin::handleTrade(int receiverIndex)
 {
+    // gameAdmin knows who the current player is, don't need to pass it through
+    std::shared_ptr<Player> trader = m_playerList.at(m_newPlayerIndex);
+    std::shared_ptr<Player> receiver = m_playerList.at(receiverIndex);
+
     // make array of the two traders so trade initiator is index 0 and the other is index 1
     std::shared_ptr<Player> traders[2] = { trader, receiver };
 
@@ -436,7 +445,7 @@ PropertyResult GameAdmin::handleProperty(std::shared_ptr<BoardSpace> cProperty)
 
             // the original loop has to return the outcome of the transaction
             // so hopefully i can just return what gets returned
-            //return promptPlayerToPay(cPlayer, rent, admin, pOwner); // TODO: fix this, put this function on Player
+            return promptPlayerToPay(rent, pOwner); // TODO: fix this, put this function on Player
         }
     }
     else if (owner == "BANK") // this is a tax or a corner
@@ -457,39 +466,82 @@ PropertyResult GameAdmin::handleProperty(std::shared_ptr<BoardSpace> cProperty)
     return PropertyResult::None;
 }
 
+
+PropertyResult GameAdmin::promptPlayerToPay(int rent, std::shared_ptr<Player> pOwner)
+{
+    // get current player
+    std::shared_ptr<Player> cPlayer = m_playerList.at(m_newPlayerIndex);
+    char menuSelection = 'p';
+
+    do
+    {
+        if (cPlayer->canAfford(rent))
+        {
+            cPlayer->payMoney(rent);
+            if (pOwner)
+            {
+                cout << cPlayer->m_playerName << " paid $" << rent << " to " << pOwner->m_playerName << endl;
+                pOwner->receiveMoney(rent);
+            }
+            else
+            {
+                cout << cPlayer->m_playerName << " paid $" << rent << " to the Bank" << endl;
+            }
+
+            return PropertyResult::PaidRent;
+        }
+        else
+        {
+            cout << "You can't afford this amount: $" << rent << endl;
+
+            // prompt player to review properties to mortgage or go bankrupt
+            menuSelection = cPlayer->playerMenu(false, false, pOwner);
+
+            if (menuSelection == 'Q') // already fully confirmed in the menu function
+            {
+                return PropertyResult::Bankruptcy;
+            }
+        }
+    } while (!cPlayer->canAfford(rent));
+
+    // should never reach this point
+    return PropertyResult::None;
+}
+
+
 //************************************************
 //              CARD FUNCTIONS
 //************************************************
 
-//PropertyResult GameAdmin::cardActionMenu(std::shared_ptr<Card> newCard)
-//{
-//    switch (newCard->m_type)
-//    {
-//    case functionType::Pay:
-//        return cardPayMoney(newCard);
-//
-//    case functionType::Receive:
-//        break;
-//
-//    case functionType::MoveToIndex:
-//
-//        break;
-//
-//    case functionType::GoToJail:
-//        cardGoToJail();
-//        break;
-//
-//    case functionType::GainJailCard:
-//        cardGainJailCard();
-//        break;
-//
-//    case functionType::MoveAndPay:
-//        break;
-//
-//    }
-//    // if an above case doesn't return first, return none
-//    return PropertyResult::None;
-//}
+PropertyResult GameAdmin::cardActionMenu(GameCard* newCard)
+{
+    switch (newCard->m_type)
+    {
+    case functionType::Pay:
+        //return cardPayMoney(newCard);
+        break;
+    case functionType::Receive:
+        break;
+
+    case functionType::MoveToIndex:
+
+        break;
+
+    case functionType::GoToJail:
+        cardGoToJail();
+        break;
+
+    case functionType::GainJailCard:
+        cardGainJailCard();
+        break;
+
+    case functionType::MoveAndPay:
+        break;
+
+    }
+    // if an above case doesn't return first, return none
+    return PropertyResult::None;
+}
 //
 //PropertyResult GameAdmin::cardPayMoney(std::shared_ptr<Card> newCard)
 //{

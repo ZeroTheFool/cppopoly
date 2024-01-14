@@ -1,15 +1,19 @@
 #pragma once
 #include "Player.h"
-//#include "GameBoard.h"
+#include "GameBoard.h"
 #include "BoardSpace.h"
-#include "tradeManager.h"
+//#include "tradeManager.h"
 //#include "CardSystem.h"
+#include "GameCard.h"
 #include "enum.h"
 
 #include <vector>
 #include <map>
 
-class GameBoard;
+//class Player;
+//class GameBoard;
+//class BoardSpace;
+class tradeManager;
 
 class GameAdmin
 {
@@ -56,6 +60,8 @@ public:
     std::shared_ptr<Player> getPLayerFromName(std::string aName);
     std::vector<std::shared_ptr<Player>> getPlayerList();
 
+    void updateSetStatus(int boardIndex, bool isComplete);
+
     int getJailFee();
 
     int getHousePool();
@@ -64,12 +70,13 @@ public:
     void setHotelPool(int newVal);
 
     void auctionProperty(std::shared_ptr<BoardSpace> cProperty);
-    void handleTrade(std::shared_ptr<Player> trader, std::shared_ptr<Player> receiver);
+    void handleTrade(int receiverIndex);
     PropertyResult handleProperty(std::shared_ptr<BoardSpace> cProperty);
+    PropertyResult promptPlayerToPay(int rent, std::shared_ptr<Player> pOwner);
 
 
     // CARD FUNCTIONS
-    //PropertyResult cardActionMenu(std::shared_ptr<Card> newCard);
+    PropertyResult cardActionMenu(GameCard* newCard);
 
     ////functionType::Pay
     //PropertyResult cardPayMoney(std::shared_ptr<Card> newCard);

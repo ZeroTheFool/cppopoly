@@ -1,10 +1,10 @@
 #pragma once
 #include "BoardSpace.h"
-#include "Player.h"
+#include "enum.h"
+//#include "Player.h"
 
 #include <string>
-
-
+class Player;
 
 
 class Property : 
@@ -26,9 +26,15 @@ private:
     int m_hotelBuildPrice = 0;
     int m_hotelDemolishValue = 0;
 
+    int m_setNeighbours[2] = { -1, -1 }; // this will contain the other two (or one) property in the same colour set
+    // the purpose of this will be to allow the player class to check ownership of a set and/or tell all members they are complete
+    // dark blue and brown will only have one index that isn't -1
+    bool m_fullSet = false;
+    int m_setSize = 3;
+
 public:
     Property() {};
-    Property(std::string inStreetName, std::string inStreetType, int inPurchasePrice, int fee0, int fee1, int fee2, int fee3, int fee4, int fee5, int inHouseBuild, int inHotelBuild, int inHouseDemo, int inHotelDemo, std::string inOwner, int inMortgage, int inUnmortgage, Colour inColour, int inBoardLocation = 0)
+    Property(std::string inStreetName, std::string inStreetType, int inPurchasePrice, int fee0, int fee1, int fee2, int fee3, int fee4, int fee5, int inHouseBuild, int inHotelBuild, int inHouseDemo, int inHotelDemo, std::string inOwner, int inMortgage, int inUnmortgage, Colour inColour, int neighbourA, int neighbourB, int inBoardLocation = 0)
         : BoardSpace (inStreetName, inStreetType, inPurchasePrice, inOwner, inMortgage, inUnmortgage, inBoardLocation)
     {        
         m_rentFee[0] = fee0;
@@ -44,6 +50,12 @@ public:
 
         m_setColour = inColour;
         colourAsString(m_setColour);
+        m_setNeighbours[0] = neighbourA;
+        m_setNeighbours[1] = neighbourB;
+        if (m_setNeighbours[1] = -1)
+        {
+            m_setSize = 2;
+        }
     };
     
     int checkBuidCost(); // to display make sure the player can afford to build, then build()  
@@ -61,6 +73,9 @@ public:
 
     Colour getSetColour();
     void colourAsString(Colour newColour);
+    int getSetSize();
+    void updateSetStatus(bool isComplete);
+    int getNeighbourByIndex(int index);
 
     bool canBeMortgaged();
     bool canBuildHere();

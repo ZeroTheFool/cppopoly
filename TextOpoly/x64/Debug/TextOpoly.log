@@ -1,5 +1,6 @@
-﻿  Player.cpp
-C:\Users\Jason\Documents\GitHub\cppopoly\TextOpoly\Player.cpp(735,43): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-  Property.cpp
+﻿  GameAdmin.cpp
+  Player.cpp
+C:\Users\Jason\Documents\GitHub\cppopoly\TextOpoly\Player.cpp(770,43): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  main.cpp
   Generating Code...
   TextOpoly.vcxproj -> C:\Users\Jason\Documents\GitHub\cppopoly\x64\Debug\TextOpoly.exe

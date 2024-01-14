@@ -3,7 +3,7 @@
 
 void CardSpace::shuffleDeck()
 {
-    std::shared_ptr<Card> temp;
+    GameCard* temp;
     //for (int i = 0; i < 16; i++)
     for (int i = 0; i < 16; i++)
     {
@@ -15,12 +15,12 @@ void CardSpace::shuffleDeck()
     }
 }
 
-std::shared_ptr<Card> CardSpace::drawNextCard()
+GameCard* CardSpace::drawNextCard()
 {
     // this function just returns the next card
     // and increments the draw index
     // admin handles the rest
-    std::shared_ptr<Card> nextCard = deck[deckPosition];
+    GameCard* nextCard = deck[deckPosition];
     
     if (deckPosition < 15)
     {

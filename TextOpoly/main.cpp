@@ -7,6 +7,7 @@
 #include "Tax.h"
 #include "CardSpace.h"
 #include "GameBoard.h"
+//#include "GameCard.h"
 #include "tradeManager.h"
 
 #include <iostream>
@@ -21,7 +22,7 @@ using namespace std;
 
 
 
-char playerMenu(bool includePass, bool includeTrade, std::shared_ptr<Player> cPlayer, std::shared_ptr<GameAdmin> admin, std::shared_ptr<Player> pOwner);
+//char playerMenu(bool includePass, bool includeTrade, std::shared_ptr<Player> cPlayer, std::shared_ptr<GameAdmin> admin, std::shared_ptr<Player> pOwner);
 PropertyResult handleProperty(std::shared_ptr<BoardSpace> cProperty, std::shared_ptr<Player> cPlayer, std::shared_ptr<GameAdmin> admin);
 void displayCurrentSpace(std::shared_ptr<BoardSpace> cBoardSpace);
 PropertyResult promptPlayerToPay(std::shared_ptr<Player> cPlayer, int rent, std::shared_ptr<GameAdmin> admin, std::shared_ptr<Player> pOwner);
@@ -36,7 +37,7 @@ int main()
 
     cout << "Welcome to" << endl;
     cout << "        ____          ____   ____   ____\n|\\  /| |    | |\\   | |    | |    | |    | |      \\   /\n| \\/ | |    | | \\  | |    | |____| |    | |       \\ /\n|    | |    | |  \\ | |    | |      |    | |        |\n|    | |____| |   \\| |____| |      |____| |_____   |\n" << endl;
-    
+
     std::shared_ptr<GameAdmin> admin = make_shared<GameAdmin>(&board);
     int playerCount = admin->getPlayerCount();
 
@@ -105,31 +106,52 @@ int main()
         {
             displayCurrentSpace(board.getCurrentSpace(currentPlayer->m_currentLocationIndex)); // this will be location 40 "In Jail"
 
-            // jail menu
-            do
+            currentPlayer->incrementJailTurns(); // let player know they've attempted another roll in jail
+            dieRollSum = admin->rollDice(dieRollOne, dieRollTwo);
+            if (dieRollOne == dieRollTwo) // rolled doubles
+            {
+                // escaped jail
+                currentPlayer->setJailStatus(false);
+                cout << "Escaped jail (Rolled)" << endl;
+            }
+            else
+            {
+                cout << "Failed to roll doubles" << endl;
+            }
+
+            // if they already tried to roll three times, have no money or properties to sell, literally cannot otherwise leave jail
+            if (currentPlayer->getJailTurns() == 3 && !currentPlayer->canAfford(admin->getJailFee()) && currentPlayer->getPropertyCount() == 0 && currentPlayer->countJailCards() == 0)
+            {
+                // just let them out
+                currentPlayer->setJailStatus(false);
+                cout << "Freed from jail (Pity Clause)" << endl;
+            }
+
+            // jail menu, skipped if player not in jail anymore
+            while (menuSelection != 0 && currentPlayer->isInJail())
             {
                 cout << "Jail Options" << endl;
-                if (dieRollSum == 0)
+
+                // may pass if you haven't tried rolling three times
+                if (currentPlayer->getJailTurns() < 3)
                 {
-                    cout << "1 - Roll Doubles" << endl;
+                    cout << "0 - Pass" << endl;
                 }
-                else
-                {
-                    cout << "Already rolled" << endl;
-                }
+
+                // always have the option of paying, but should be allowed to review properties to afford it
                 if (currentPlayer->canAfford(admin->getJailFee()))
                 {
-                    cout << "2 - Pay Fine ($" << admin->getJailFee() << ")" << endl;
+                    cout << "1 - Pay Fine ($" << admin->getJailFee() << ")" << endl;
                 }
                 else
                 {
-                    cout << "Can't afford fine ($" << admin->getJailFee() << ")" << endl;
+                    cout << "1 - Review Properties to afford fine ($" << admin->getJailFee() << ")" << endl;
                 }
+                // if player has get out of jail cards, enable them to use it
                 if (currentPlayer->countJailCards() > 0)
                 {
-                    cout << "3 - Use Get Out of Jail Free (" << currentPlayer->countJailCards() << ")" << endl;
+                    cout << "2 - Use \"Get Out of Jail Free\" card (" << currentPlayer->countJailCards() << ")" << endl;
                 }
-                cout << "0 - Pass" << endl;
                 cin >> menuSelection;
 
                 switch (menuSelection)
@@ -137,32 +159,19 @@ int main()
                 case 0:
                     break;
                 case 1:
-                    // need to roll doubles to escape jail
-                    if (dieRollSum == 0) // hasn't rolled yet
-                    {
-                        dieRollSum = admin->rollDice(dieRollOne, dieRollTwo);
-                        if (dieRollOne == dieRollTwo) // rolled doubles
-                        {
-                            // escaped jail
-                            currentPlayer->setJailStatus(false);
-                            cout << "Escaped jail" << endl;
-                        }
-                        else
-                        {
-                            cout << "Failed to roll doubles" << endl;
-                        }
-                        break;
-                    }
-                case 2:
                     // pay fine to leave jail
                     if (currentPlayer->canAfford(admin->getJailFee()))
                     {
                         currentPlayer->payMoney(admin->getJailFee());
                         currentPlayer->setJailStatus(false);
-                        cout << "Escaped jail" << endl;
+                        cout << "Escaped jail (Paid Fine)" << endl;
+                    }
+                    else
+                    {
+                        currentPlayer->reviewProperties();
                     }
                     break;
-                case 3:
+                case 2:
                     // spend a jail card
                     if (currentPlayer->countJailCards() > 0)
                     {
@@ -174,7 +183,7 @@ int main()
 
                 }
                 // loop until player is no longer in jail, or they choose to stay
-            } while (menuSelection != 0 && currentPlayer->isInJail());
+            }
 
             // if still in jail, skip remainder of turn
             if (currentPlayer->isInJail())
@@ -258,12 +267,14 @@ int main()
             if (dynamic_pointer_cast<CardSpace> (currentLocation))
             {
                 // don't need to do any property stuff for a cardspace
-                dynamic_pointer_cast<CardSpace> (currentLocation)->drawNextCard();
+                admin->cardActionMenu(dynamic_pointer_cast<CardSpace> (currentLocation)->drawNextCard());
+                //TODO: does this work if funciton returns a GameCard object and main doesn't know what GameCard is?
             }
             else
             {
                 // first resolve the new space: unowned -> buy, owned -> nothing, rent due -> pay
-                result = handleProperty(currentLocation, currentPlayer, admin);
+                result = admin->handleProperty(currentLocation);
+                
 
             }
         }
@@ -337,85 +348,6 @@ int main()
 }
 
 
-char playerMenu(bool includePass, bool includeTrade, std::shared_ptr<Player> cPlayer, std::shared_ptr<GameAdmin> admin, std::shared_ptr<Player> pOwner)
-{
-    char menuSelection = 'r';
-
-    if (cPlayer->getPropertyCount() > 0)
-        cout << "r - review properties" << endl;
-
-    if (includeTrade)
-        cout << "t - trade properties" << endl;
-
-    if (includePass)
-        cout << "p - pass turn" << endl;
-
-    cout << "Q - declare bankruptcy" << endl;
-
-    cin >> menuSelection;
-
-    if (menuSelection == 'r')
-    {
-        if (cPlayer->getPropertyCount() > 0)
-        {
-            cPlayer->reviewProperties();
-
-        }
-    }
-    else if (menuSelection == 't' && includeTrade)
-    {
-        int chosenPartner = -1;
-        // prompt user to choose a player to trade with
-        do
-        {
-            cout << "Who To Trade With:" << endl;
-            for (int i = 0; i < admin->getPlayerCount(); i++)
-            {
-                if (i != admin->getCurrentPlayerIndex())
-                {
-                    // only print names and user-friendly indexes of other players
-                    //printf("%i - %s", i + 1, admin->getPlayerList().at(i));
-                    cout << i + 1 << " " << admin->getPlayerList().at(i) << endl;
-                }
-            }
-            cin >> chosenPartner;
-            chosenPartner--;
-
-            // loop until they don't choose themself
-        } while (chosenPartner == admin->getCurrentPlayerIndex());
-
-        std::shared_ptr<Player> tradePartner = admin->getPlayerList().at(chosenPartner);
-        admin->handleTrade(cPlayer, tradePartner);
-    }
-
-    else if (menuSelection == 'Q')
-    {
-        cout << "Q - confirm bankruptcy" << endl;
-        cin >> menuSelection;
-        if (menuSelection == 'Q')
-        {
-            if (pOwner)
-            {
-                cPlayer->goBankrupt(pOwner);
-            }
-            else
-            {
-                cPlayer->goBankrupt();
-            }
-        }
-    }
-    else if (menuSelection == 'p' && includePass)
-    {
-        return menuSelection;
-    }
-    else
-    {
-        cout << "Invalid entry" << endl;
-    }
-
-    return menuSelection; // unless this is Q, it doesn't matter
-}
-
 PropertyResult handleProperty(std::shared_ptr<BoardSpace> cProperty, std::shared_ptr<Player> cPlayer, std::shared_ptr<GameAdmin> admin)
 {
     char menuSelection;
@@ -488,6 +420,8 @@ PropertyResult handleProperty(std::shared_ptr<BoardSpace> cProperty, std::shared
         {
             cPlayer->setDebtor(pOwner);
             int rent = 0;
+
+            // check if utility, because the rent fee needs die roll
             if (dynamic_pointer_cast<Utility>(cProperty))
             {
                 rent = cProperty->getRentFee(cPlayer->getRollSum());
@@ -499,7 +433,7 @@ PropertyResult handleProperty(std::shared_ptr<BoardSpace> cProperty, std::shared
 
             // the original loop has to return the outcome of the transaction
             // so hopefully i can just return what gets returned
-            return promptPlayerToPay(cPlayer, rent, admin, pOwner);
+            return admin->promptPlayerToPay(rent, pOwner);
         }
     }
     else if (owner == "BANK") // this is a tax or a corner
@@ -514,7 +448,7 @@ PropertyResult handleProperty(std::shared_ptr<BoardSpace> cProperty, std::shared
 
         if (rent != 0) // rent charged because this is a tax space
         {
-            promptPlayerToPay(cPlayer, rent, admin, nullptr);
+            return admin->promptPlayerToPay(rent, nullptr);
         }
     }
     return PropertyResult::None;

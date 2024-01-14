@@ -1,19 +1,21 @@
 #pragma once
-#include "BoardSpace.h"
+//#include "BoardSpace.h"
 //#include "GameAdmin.h"
+#include "enum.h"
 
 #include <string>
 #include <vector>
 #include <map>
 #include <memory>
 
+class BoardSpace;
 class GameAdmin;
 struct tradeOffer;
 
 class Player
 {
 private:
-    std::shared_ptr<GameAdmin> admin;
+    std::shared_ptr<GameAdmin> m_admin;
     static const int c_boardSize = 40;
     int m_totalMoney = 0;
     int m_jailCards = 0; // 0, 1, 2 "get out of jail free" cards, subtract 1 to escape
@@ -21,6 +23,7 @@ private:
     
     bool m_isBankrupt = false;
     bool m_isInJail = false;
+    int m_turnsInJail = 0;
     bool m_hasBonusRoll = false;
     
     int m_dieRoll1 = 0;
@@ -102,6 +105,8 @@ public:
     bool tooManyDoubles();
     bool isInJail();
     void setJailStatus(bool newStatus);
+    void incrementJailTurns();
+    int getJailTurns();
     void resetDoubles();
     void moveTo(int spaceIndex);
     int getRollSum();
@@ -123,6 +128,7 @@ public:
     
     void reviewProperties();
     void acquireProperty(std::shared_ptr <BoardSpace> aNewSpace);
+    void updateSetSpaces(std::shared_ptr<BoardSpace>& aNewSpace, bool isComplete);
     void organizeNewProperty(std::shared_ptr <BoardSpace> aNewSpace);
     int getPropertyCount();
 

@@ -14,6 +14,14 @@ struct GameCard
     functionType m_type = functionType::Pay;
 
     GameCard() {};
-    GameCard(std::string name, std::string description, int value, int multiplier, functionTarget target, functionType type) {};
+    GameCard(std::string name, std::string description, int value, int multiplier, functionType type, functionTarget target)
+    {
+        m_name = name;
+        m_description = description;
+        m_functionValue = value;
+        m_payMultiplier = multiplier;
+        m_type = type;
+        m_target = target;
+    };
 };
 
