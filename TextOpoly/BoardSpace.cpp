@@ -4,14 +4,14 @@
 void BoardSpace::createDisplayName()
 {
     // add top border to display name
-    m_displayName = "x----------------x\n";
+    m_displayName = "x--------------------x\n";
 
-    m_displayName += "|" + formatDisplayNameRow(m_streetName, 16) + "|\n";;
-    m_displayName += "|" + formatDisplayNameRow("", 16) + "|\n";;
-    m_displayName += "|" + formatDisplayNameRow(m_streetType, 16) + "|\n";;
+    m_displayName += "|" + formatDisplayNameRow(m_streetName, 20) + "|\n";;
+    m_displayName += "|" + formatDisplayNameRow("", 20) + "|\n";;
+    m_displayName += "|" + formatDisplayNameRow(m_streetType, 20) + "|\n";;
 
     // add bottom border to display name
-    m_displayName += "x----------------x\n";
+    m_displayName += "x--------------------x\n";
 }
 
 std::string BoardSpace::formatDisplayNameRow(std::string text, int width)

@@ -68,44 +68,44 @@ int Property::checkBuidCost()
 void Property::displayDetails()
 {
     if (m_isMortgaged)
-        cout << formatDisplayNameRow("--MORTGAGED--", 18) << endl;
+        cout << formatDisplayNameRow("--MORTGAGED--", 20) << endl;
 
     if (m_tradeListed)
-        cout << formatDisplayNameRow("--ON TRADE--", 18) << endl;
+        cout << formatDisplayNameRow("--ON TRADE--", 20) << endl;
 
     if (m_fullSet)
     {
-        cout << formatDisplayNameRow("SET: " + m_colourDisplay + "**\n", 18) << endl;
+        cout << formatDisplayNameRow("SET: " + m_colourDisplay + "**\n", 20) << endl;
     }
     else
     {
-        cout << formatDisplayNameRow("SET: " + m_colourDisplay + "--\n", 18) << endl;
+        cout << formatDisplayNameRow("SET: " + m_colourDisplay + "--\n", 20) << endl;
     }
     // could there be an indicator here that player owns full set?
 
     if (m_currentOwner == "None")
     {
-        cout << formatDisplayNameRow("Price:" + to_string(m_purchasePrice), 18) << endl;
-        cout << formatDisplayNameRow("Rent:" + to_string(m_rentFee[m_houses]), 18) << endl;
+        cout << formatDisplayNameRow("Price:" + to_string(m_purchasePrice), 20) << endl;
+        cout << formatDisplayNameRow("Rent:" + to_string(m_rentFee[m_houses]), 20) << endl;
     }
     else
     {
-        cout << formatDisplayNameRow("Owner:" + BoardSpace::m_currentOwner, 18) << endl;
+        cout << formatDisplayNameRow("Owner:" + BoardSpace::m_currentOwner, 20) << endl;
         if (!m_isMortgaged)
-            cout << formatDisplayNameRow("Rent:" + to_string(m_rentFee[m_houses]), 18) << endl;
+            cout << formatDisplayNameRow("Rent:" + to_string(m_rentFee[m_houses]), 20) << endl;
     }
 
     if (m_hotel)
     {
-        cout << formatDisplayNameRow("Hotel", 18) << endl;
+        cout << formatDisplayNameRow("Hotel", 20) << endl;
     }
     else
     {
-        cout << formatDisplayNameRow("Houses:" + to_string(m_hotel ? 0 : m_houses), 18) << endl; // if a hotel is present, have to say 0 houses
+        cout << formatDisplayNameRow("Houses:" + to_string(m_hotel ? 0 : m_houses), 20) << endl; // if a hotel is present, have to say 0 houses
     }
 
 
-    cout << "\nx----------------x\n" << endl;
+    cout << "\nx--------------------x\n" << endl;
 }
 
 void Property::viewMenu(int houses, int hotels)

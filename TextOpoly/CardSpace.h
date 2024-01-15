@@ -5,12 +5,13 @@
 #include "Player.h"
 
 #include <memory>
+#include <array>
 
 class CardSpace :
     public BoardSpace
 {
 private:
-    GameCard* deck[16];
+    std::array<GameCard*,16> deck;
     CardSystem* cSystem = nullptr;
     int deckPosition = 0;
 
@@ -23,9 +24,9 @@ public:
         if (spaceType == "chance")
         {
             cSystem = new CardSystem("chance");
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < 16; i++)
             {
-                deck[i] = cSystem->returnChanceCard(i);
+                deck = cSystem->returnChanceCard();
             }
         }
         else if (spaceType == "community")

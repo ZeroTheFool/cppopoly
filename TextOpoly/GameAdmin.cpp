@@ -48,7 +48,7 @@ void GameAdmin::makePlayerList()
         {
             if (m_playerCount > 1)
             {
-            break;
+                break;
             }
         }
     } while (m_playerCount != m_maxPlayerCount);
@@ -557,22 +557,26 @@ std::string GameAdmin::formatDisplayNameRow(std::string text, int width)
 
 PropertyResult GameAdmin::cardActionMenu(GameCard* newCard)
 {
-    string m_displayText = "\nx----------------x\n";
+    string m_displayText = "\nx--------------------x\n";
     // add top border to display name
-
-    m_displayText += "|" + formatDisplayNameRow(newCard->m_name, 16) + "|\n";;
-    m_displayText += "|" + formatDisplayNameRow("", 16) + "|\n";;
-    m_displayText += "|" + formatDisplayNameRow(newCard->m_description, 16) + "|\n";;
-
+    m_displayText += "|" + formatDisplayNameRow(newCard->m_name, 20) + "|\n";
+    m_displayText += "|" + formatDisplayNameRow("----------", 20) + "|\n";
+    for (int i = 0; i < 6; i++)
+    {
+        // for each line that isn't empty
+        if (newCard->m_descriptionLines[i] == "")
+            break;
+        m_displayText += "|" + formatDisplayNameRow(newCard->m_descriptionLines[i], 20) + "|\n";
+    }
     // add bottom border to display name
-    m_displayText += "x----------------x\n";
+    m_displayText += "|" + formatDisplayNameRow(" ", 20) + "|\n";
+    m_displayText += "x--------------------x\n";
 
     cout << m_displayText << endl;
 
     switch (newCard->m_type)
     {
     case functionType::Pay:
-        cout << newCard->m_name << endl;
         return cardPayMoney(newCard);
 
     case functionType::Receive:
@@ -580,7 +584,7 @@ PropertyResult GameAdmin::cardActionMenu(GameCard* newCard)
         return PropertyResult::None;
 
     case functionType::MoveToIndex:
-        cout << newCard->m_name << endl;
+
         break;
 
     case functionType::GoToJail:

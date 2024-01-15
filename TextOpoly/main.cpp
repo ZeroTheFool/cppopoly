@@ -270,6 +270,7 @@ int main()
             {
                 // don't need to do any property stuff for a cardspace
                 admin->cardActionMenu(dynamic_pointer_cast<CardSpace> (currentLocation)->drawNextCard());
+                system("pause");
                 //TODO: does this work if funciton returns a GameCard object and main doesn't know what GameCard is?
             }
             else

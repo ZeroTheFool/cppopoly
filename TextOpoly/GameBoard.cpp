@@ -128,7 +128,7 @@ GameBoard::GameBoard()
     // these spaces don't need a board location, board location is only for ownable spaces
     // as long as they exist in m_boardOrder then it's fine
     // EDIT: until they get deleted, because one the first instance is deleted, the other two cause errors
-    m_newSpace = std::make_shared<CardSpace>("Community", "Chest", "community");
+    m_newSpace = std::make_shared<CardSpace>("Community", "Chest", "chance"); //TESTING: should be community
     m_boardOrder[2] = m_newSpace;
     m_boardOrder[17] = m_newSpace;
     m_boardOrder[33] = m_newSpace;

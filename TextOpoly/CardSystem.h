@@ -9,6 +9,7 @@
 
 #include <string>
 #include <memory>
+#include <array>
 
 class Player;
 class GameAdmin;
@@ -17,7 +18,7 @@ class CardSystem
 {
 private:
     
-    GameCard* chanceDeck[16];
+    std::array<GameCard*,16> chanceDeck;
     GameCard* communityDeck[16];
 ;
 public:
@@ -39,8 +40,8 @@ public:
     void makeChanceDeck();
     void makeCommunityDeck();
 
-    GameCard* returnChanceCard(int index) {
-        return chanceDeck[index];
+    std::array<GameCard*,16> returnChanceCard() {
+        return chanceDeck;
     };
     GameCard* returnCommunityCard(int index) {
         return communityDeck[index];

@@ -22,7 +22,7 @@ GameCard* CardSpace::drawNextCard()
     // admin handles the rest
     GameCard* nextCard = deck[deckPosition];
     
-    if (deckPosition < 2) // TESTING: should be 15
+    if (deckPosition < 15) // TESTING: should be 15
     {
         deckPosition++;
     }

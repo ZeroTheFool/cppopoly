@@ -13,6 +13,7 @@ enum class functionType
 enum class functionTarget
 {
     None,
+    Single,
     All,
     Bank
 };
