@@ -234,7 +234,7 @@ int main()
         // use their roll (from jail or not) to move to new space
 
         currentLocationIndex = currentPlayer->rollResult(dieRollOne, dieRollTwo);
-        currentLocationIndex = 7; // TESTING:need to land on a cardspace
+        //currentLocationIndex = 7; // TESTING:need to land on a cardspace
         cout << "Moving..." << endl;
 
         if (currentLocationIndex > 39)
@@ -243,7 +243,7 @@ int main()
             cout << currentPlayer->m_playerName << " passed GO. Collect $200" << endl;
             currentPlayer->receiveMoney(200);
             // set location index to a valid number
-            currentLocationIndex -= 40; //TESTING: movement
+            currentLocationIndex -= 40;
         }
         //cout << "[" << currentLocationIndex << "]" << endl; //TESTING: just shows the current space index
         currentLocation = board.getCurrentSpace(currentLocationIndex);
